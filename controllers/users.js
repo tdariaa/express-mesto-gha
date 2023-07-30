@@ -25,9 +25,7 @@ module.exports.getUser = (req, res) => {
 
 module.exports.createUser = (req, res) => {
   UserModel.create({ ...req.body })
-    .then((user) => {
-      return res.status(201).send(user);
-    })
+    .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });

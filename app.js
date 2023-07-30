@@ -24,8 +24,6 @@ app.use((req, res, next) => {
   };
   next();
 });
-app.use('*', (req, res) => {
-  return res.status(404).send({ message: 'Не найдено' });
-});
 app.use(UsersRouter);
 app.use(CardsRouter);
+app.use('*', (req, res) => res.status(404).send({ message: 'Не найдено' }));
