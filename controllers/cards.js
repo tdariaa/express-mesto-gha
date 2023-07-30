@@ -3,7 +3,7 @@ const CardModel = require('../models/cards');
 module.exports.getCards = (req, res) => {
   return CardModel.find({})
     .then((cards) => {
-      res.status(200).send(cards);
+      return res.status(200).send(cards);
     })
     .catch(() => {
       return res.status(500).send({ message: 'Ошибка сервера' });
@@ -45,12 +45,13 @@ module.exports.putLike = (req, res) => {
   CardModel.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
-    { new: true })
+    { new: true }
+    )
     .then((card) => {
       if (!card) {
         return res.status(404).send({ message: 'Передан несуществующий id карточки' });
       }
-      res.status(200).send(card);
+      return res.status(200).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -64,7 +65,8 @@ module.exports.deleteLike = (req, res) => {
   CardModel.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
-    { new: true })
+    { new: true }
+    )
     .then((card) => {
       if (card) {
         if (!card) {
