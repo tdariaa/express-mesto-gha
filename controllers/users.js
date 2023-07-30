@@ -1,18 +1,14 @@
 const UserModel = require('../models/users');
 
 module.exports.getUsers = (req, res) => {
-  return UserModel.find()
-    .then((users) => {
-      return res.status(200).send(users);
-    })
-    .catch(() => {
-      return res.status(500).send({ message: 'Ошибка сервера' });
-    });
+  UserModel.find({})
+    .then((users) => res.status(200).send(users))
+    .catch(() => res.status(500).send({ message: 'Ошибка сервера' }));
 };
 
 module.exports.getUser = (req, res) => {
   const { userId } = req.params;
-  return UserModel.findById(userId)
+  UserModel.findById(userId)
     .then((user) => {
       if (!user) {
         return res.status(404).send({ message: 'Пользователь по указанному id не найден' });
@@ -28,7 +24,7 @@ module.exports.getUser = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
-  return UserModel.create({ ...req.body })
+  UserModel.create({ ...req.body })
     .then((user) => {
       return res.status(201).send(user);
     })
@@ -37,12 +33,12 @@ module.exports.createUser = (req, res) => {
         return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
       }
       return res.status(500).send({ message: 'Ошибка сервера' });
-    })
+    });
 };
 
 module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
-  return UserModel.findByIdAndUpdate(req.user._id, { name, about }, {
+  UserModel.findByIdAndUpdate(req.user._id, { name, about }, {
     new: true,
     runValidators: true,
   })
@@ -61,7 +57,7 @@ module.exports.updateProfile = (req, res) => {
 };
 
 module.exports.updateAvatar = (req, res) => {
-  return UserModel.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar }, {
+  UserModel.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar }, {
     new: true,
     runValidators: true,
   })

@@ -1,20 +1,15 @@
 const CardModel = require('../models/cards');
 
 module.exports.getCards = (req, res) => {
-  return CardModel.find({})
-    .then((cards) => {
-      return res.status(200).send(cards);
-    })
-    .catch(() => {
-      return res.status(500).send({ message: 'Ошибка сервера' });
-    });
+  CardModel.find({})
+    .then((cards) => res.status(201).send(cards))
+    .catch(() => res.status(500).send({ message: 'Ошибка сервера' }));
 };
 
 module.exports.createCard = (req, res) => {
-  const { _id } = req.user._id;
-  return CardModel.create({ ...req.body, owner: _id })
+  CardModel.create({ ...req.body, owner: req.user._id })
     .then((card) => {
-      res.status(201).send(card);
+      return res.status(201).send(card);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -26,10 +21,10 @@ module.exports.createCard = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
-  return CardModel.findByIdAndRemove(cardId)
+  CardModel.findByIdAndRemove(cardId)
     .then((card) => {
       if (card) {
-        res.status(200).send(card);
+        return res.status(200).send(card);
       }
       return res.status(404).send({ message: ' Карточка с указанным id не найдена' });
     })
@@ -45,8 +40,8 @@ module.exports.putLike = (req, res) => {
   CardModel.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
-    { new: true }
-    )
+    { new: true },
+  )
     .then((card) => {
       if (!card) {
         return res.status(404).send({ message: 'Передан несуществующий id карточки' });
@@ -65,14 +60,14 @@ module.exports.deleteLike = (req, res) => {
   CardModel.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
-    { new: true }
-    )
+    { new: true },
+  )
     .then((card) => {
       if (card) {
         if (!card) {
           return res.status(404).send({ message: 'Передан несуществующий id карточки' });
         }
-        res.status(200).send(card);
+        return res.status(200).send(card);
       }
       return res.status(404).send({ message: 'Передан несуществующий id карточки' });
     })
