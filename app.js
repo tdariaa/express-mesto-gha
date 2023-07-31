@@ -4,10 +4,10 @@ const bodyParser = require('body-parser');
 const UsersRouter = require('./routes/users');
 const CardsRouter = require('./routes/cards');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3000, DB_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
+mongoose.connect(DB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   family: 4,

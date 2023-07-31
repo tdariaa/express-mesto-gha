@@ -3,7 +3,7 @@ const UserModel = require('../models/users');
 module.exports.getUsers = (req, res) => {
   UserModel.find({})
     .then((users) => res.status(200).send(users))
-    .catch(() => res.status(500).send({ message: 'Ошибка сервера' }));
+    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
 };
 
 module.exports.getUser = (req, res) => {
@@ -19,7 +19,7 @@ module.exports.getUser = (req, res) => {
       if (err.name === 'CastError') {
         return res.status(400).send({ message: 'Передан некорректный id' });
       }
-      return res.status(500).send({ message: 'Ошибка сервера' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -30,7 +30,7 @@ module.exports.createUser = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
       }
-      return res.status(500).send({ message: 'Ошибка сервера' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -50,7 +50,7 @@ module.exports.updateProfile = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
       }
-      return res.status(500).send({ message: 'Ошибка сервера' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -69,6 +69,6 @@ module.exports.updateAvatar = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Переданы некорректные данные' });
       }
-      return res.status(500).send({ message: 'Ошибка сервера' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };
