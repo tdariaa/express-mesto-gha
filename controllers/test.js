@@ -1,14 +1,14 @@
-const UserModel = require('../models/test');
+const TestModel = require('../models/test');
 
 module.exports.getUsers = (req, res) => {
-  UserModel.find({})
+  TestModel.find({})
     .then((users) => res.status(200).send(users))
     .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
 };
 
 module.exports.getUser = (req, res) => {
   const { userId } = req.params;
-  UserModel.findById(userId)
+  TestModel.findById(userId)
     .then((user) => {
       if (!user) {
         return res.status(404).send({ message: 'Пользователь по указанному id не найден' });
@@ -24,7 +24,7 @@ module.exports.getUser = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
-  UserModel.create({ ...req.body })
+  TestModel.create({ ...req.body })
     .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -39,7 +39,7 @@ module.exports.createUser = (req, res) => {
 
 module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
-  UserModel.findByIdAndUpdate(req.user._id, { name, about }, {
+  TestModel.findByIdAndUpdate(req.user._id, { name, about }, {
     new: true,
     runValidators: true,
   })
@@ -58,7 +58,7 @@ module.exports.updateProfile = (req, res) => {
 };
 
 module.exports.updateAvatar = (req, res) => {
-  UserModel.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar }, {
+  TestModel.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar }, {
     new: true,
     runValidators: true,
   })
