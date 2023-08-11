@@ -19,12 +19,18 @@ module.exports.createCard = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
-  CardModel.findByIdAndRemove(cardId)
+  const { _id } = req.user;
+
+  CardModel.findById(cardId)
     .then((card) => {
-      if (card) {
-        return res.status(200).send(card);
+      if (!card) {
+        return res.status(404).send({ message: 'Карточка с указанным id не найдена' });
       }
-      return res.status(404).send({ message: ' Карточка с указанным id не найдена' });
+      if (!(_id === card.owner.toString())) {
+        return res.status(403).send({ message: 'Доступ к запрошенному ресурсу запрещен' });
+      }
+      return CardModel.findByIdAndRemove(cardId)
+        .then((deletedCard) => res.status(200).send(deletedCard));
     })
     .catch((err) => {
       if (err.name === 'CastError') {

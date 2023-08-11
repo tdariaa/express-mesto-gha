@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const UsersRouter = require('./routes/users');
 const CardsRouter = require('./routes/cards');
 
@@ -31,6 +32,8 @@ const {
   login,
   createUser,
 } = require('./controllers/users');
+
+app.use(cookieParser());
 
 app.post('/signin', login);
 app.post('/signup', createUser);

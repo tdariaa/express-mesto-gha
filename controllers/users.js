@@ -107,7 +107,7 @@ module.exports.login = (req, res) => {
   return UserModel.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-      return res.status(200).cookie('jwt', token, { maxAge: 360 * 1000, httpOnly: true }).send({ token }).end();
+      return res.status(200).cookie('jwt', token, { maxAge: 720 * 1000, httpOnly: true }).send({ token }).end();
     })
     .catch((err) => {
       res.status(401).send({ message: err.message });

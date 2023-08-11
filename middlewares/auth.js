@@ -1,16 +1,12 @@
 const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
-  const authorization = req.headers.cookie;
-  console.log(req.headers.cookie);
+  const token = req.cookies.jwt;
 
-  if (!authorization) {
-    console.log(!authorization);
+  if (!token) {
     return res.status(401).send({ message: 'Необходима авторизация' });
   }
 
-  const token = authorization.replace('jwt=', '');
-  console.log(token);
   let payload;
 
   try {
@@ -18,7 +14,7 @@ module.exports = (req, res, next) => {
   } catch (err) {
     return res.status(401).send({ message: 'Необходима авторизация' });
   }
+
   req.user = payload;
-  console.log(payload);
   return next();
 };
