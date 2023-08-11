@@ -21,13 +21,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.listen(PORT);
 
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: '64d548b08c3477f930061b8f',
-//   };
-//   next();
-// });
-
 const {
   login,
   createUser,
@@ -40,7 +33,6 @@ app.post('/signup', createUser);
 
 app.use(auth);
 
-// app.use('/users', require('./routes/users'));
 app.use(UsersRouter);
 app.use(CardsRouter);
 app.use('*', (req, res) => res.status(404).send({ message: 'Не найдено' }));
