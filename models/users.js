@@ -6,6 +6,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    validate: {
+      validator(v) {
+        return /([a-zA-Z0-9_]{1,})@([a-zA-Z0-9]{1,}).([a-zA-Z0-9]{1,})/.test(v);
+      },
+      message: 'Передан некорректный email',
+    },
   },
   password: {
     type: String,
@@ -28,6 +34,12 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    validate: {
+      validator(v) {
+        return /(https?:)\/\/(www\.)?([\w\S]{1,})/.test(v);
+      },
+      message: 'Переданы некорректные данные при создании карточки',
+    },
   },
 });
 
