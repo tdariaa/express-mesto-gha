@@ -1,46 +1,50 @@
 const CardModel = require('../models/cards');
 
-module.exports.getCards = (req, res) => {
+const BadRequestError = require('../errors/bad-request-error');
+const NotFoundError = require('../errors/not-found-error');
+const ForbiddenError = require('../errors/forbidden-error');
+
+module.exports.getCards = (req, res, next) => {
   CardModel.find({})
     .then((cards) => res.status(200).send(cards))
-    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   CardModel.create({ ...req.body, owner: req.user._id })
     .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Переданы некорректные данные при создании карточки' });
+        return next(new BadRequestError('Переданы некорректные данные при создании карточки'));
       }
-      return res.status(500).send({ message: 'На сервере произошла ошибка' });
+      return next(err);
     });
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   const { _id } = req.user;
 
   CardModel.findById(cardId)
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Карточка с указанным id не найдена' });
+        return next(new NotFoundError('Карточка с указанным id не найдена'));
       }
       if (!(_id === card.owner.toString())) {
-        return res.status(403).send({ message: 'Доступ к запрошенному ресурсу запрещен' });
+        return next(new ForbiddenError('Доступ к запрошенному ресурсу запрещен'));
       }
       return CardModel.findByIdAndRemove(cardId)
         .then((deletedCard) => res.status(200).send(deletedCard));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Передан некорректный id' });
+        return next(new BadRequestError('Передан некорректный id'));
       }
-      return res.status(500).send({ message: 'На сервере произошла ошибка' });
+      return next(err);
     });
 };
 
-module.exports.putLike = (req, res) => {
+module.exports.putLike = (req, res, next) => {
   CardModel.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -48,19 +52,19 @@ module.exports.putLike = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Передан несуществующий id карточки' });
+        return next(new NotFoundError('Передан несуществующий id карточки'));
       }
       return res.status(200).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Переданы некорректные данные для постановки лайка' });
+        return next(new BadRequestError('Переданы некорректные данные для постановки лайка'));
       }
-      return res.status(500).send({ message: 'На сервере произошла ошибка' });
+      return next(err);
     });
 };
 
-module.exports.deleteLike = (req, res) => {
+module.exports.deleteLike = (req, res, next) => {
   CardModel.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -68,17 +72,14 @@ module.exports.deleteLike = (req, res) => {
   )
     .then((card) => {
       if (card) {
-        if (!card) {
-          return res.status(404).send({ message: 'Передан несуществующий id карточки' });
-        }
         return res.status(200).send(card);
       }
-      return res.status(404).send({ message: 'Передан несуществующий id карточки' });
+      return next(new NotFoundError('Передан несуществующий id карточки'));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Переданы некорректные данные для снятия лайка' });
+        return next(new BadRequestError('Переданы некорректные данные для снятия лайка'));
       }
-      return res.status(500).send({ message: 'На сервере произошла ошибка' });
+      return next(err);
     });
 };

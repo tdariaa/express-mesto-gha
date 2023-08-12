@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const { celebrate, Joi, errors } = require('celebrate');
+
 const UsersRouter = require('./routes/users');
 const CardsRouter = require('./routes/cards');
 
@@ -29,12 +31,27 @@ const {
 
 app.use(cookieParser());
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
+  }),
+}), login);
+
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string(),
+  }),
+}), createUser);
 
 app.use(auth);
 
 app.use(UsersRouter);
 app.use(CardsRouter);
 app.use('*', (req, res) => res.status(404).send({ message: 'Не найдено' }));
+app.use(errors());
 app.use(errorHandler);

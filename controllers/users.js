@@ -7,10 +7,10 @@ const NotFoundError = require('../errors/not-found-error');
 const ConflictEerror = require('../errors/conflict-error');
 const UnauthorizedError = require('../errors/unauthorized-error');
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   UserModel.find({})
     .then((users) => res.status(200).send(users))
-    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
+    .catch(next);
 };
 
 module.exports.getUser = (req, res, next) => {
@@ -26,7 +26,7 @@ module.exports.getUser = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new BadRequestError('Передан некорректный id'));
       }
-      return res.status(500).send({ message: 'На сервере произошла ошибка' });
+      return next(err);
     });
 };
 
@@ -43,7 +43,7 @@ module.exports.getMe = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new BadRequestError('Передан некорректный id'));
       }
-      return res.status(500).send({ message: 'На сервере произошла ошибка' });
+      return next(err);
     });
 };
 
@@ -61,10 +61,10 @@ module.exports.createUser = (req, res, next) => {
       if (err.name === 'ValidationError' || err.name === 'Error') {
         return next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
       }
-      if (err.name === 'MongoServerError') {
+      if (err.code === 11000) {
         return next(new ConflictEerror('При регистрации указан email, который уже существует на сервере'));
       }
-      return res.status(500).send({ message: 'На сервере произошла ошибка' });
+      return next(err);
     });
 };
 
@@ -84,7 +84,7 @@ module.exports.updateProfile = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
       }
-      return res.status(500).send({ message: 'На сервере произошла ошибка' });
+      return next(err);
     });
 };
 
@@ -103,7 +103,7 @@ module.exports.updateAvatar = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные'));
       }
-      return res.status(500).send({ message: 'На сервере произошла ошибка' });
+      return next(err);
     });
 };
 
