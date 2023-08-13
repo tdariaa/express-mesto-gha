@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const validator = require('validator');
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -8,7 +9,8 @@ const userSchema = new mongoose.Schema({
     unique: true,
     validate: {
       validator(v) {
-        return /([a-zA-Z0-9_]{1,})@([a-zA-Z0-9]{1,}).([a-zA-Z0-9]{1,})/.test(v);
+        validator.isEmail(v);
+        // return /([a-zA-Z0-9_]{1,})@([a-zA-Z0-9]{1,}).([a-zA-Z0-9]{1,})/.test(v);
       },
       message: 'Передан некорректный email',
     },
