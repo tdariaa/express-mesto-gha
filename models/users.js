@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
+const validationRegex = require('../utils/constants');
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -10,7 +11,6 @@ const userSchema = new mongoose.Schema({
     validate: {
       validator(v) {
         validator.isEmail(v);
-        // return /([a-zA-Z0-9_]{1,})@([a-zA-Z0-9]{1,}).([a-zA-Z0-9]{1,})/.test(v);
       },
       message: 'Передан некорректный email',
     },
@@ -18,7 +18,6 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 8,
     select: false,
   },
   name: {
@@ -38,7 +37,7 @@ const userSchema = new mongoose.Schema({
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
       validator(v) {
-        return /(https?:)\/\/(www\.)?([\w\S]{1,})/.test(v);
+        return validationRegex.test(v);
       },
       message: 'Переданы некорректные данные при создании карточки',
     },

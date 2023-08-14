@@ -33,8 +33,8 @@ module.exports.deleteCard = (req, res, next) => {
       if (!(_id === card.owner.toString())) {
         return next(new ForbiddenError('Доступ к запрошенному ресурсу запрещен'));
       }
-      return CardModel.findByIdAndRemove(cardId)
-        .then((deletedCard) => res.status(200).send(deletedCard));
+      return CardModel.deleteOne(card)
+        .then(() => res.status(200).send(card));
     })
     .catch((err) => {
       if (err.name === 'CastError') {

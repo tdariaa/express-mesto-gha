@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validationRegex = require('../utils/constants');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -12,7 +13,7 @@ const cardSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(v) {
-        return /(https?:)\/\/(www\.)?([\w\S]{1,})/.test(v);
+        return validationRegex.test(v);
       },
       message: 'Переданы некорректные данные при создании карточки',
     },
