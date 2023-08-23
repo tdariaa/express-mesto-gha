@@ -8,6 +8,7 @@ const UsersRouter = require('./routes/users');
 const CardsRouter = require('./routes/cards');
 const NotFoundError = require('./errors/not-found-error');
 
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 const auth = require('./middlewares/auth');
 const errorHandler = require('./middlewares/error-handler');
 const {
@@ -34,8 +35,9 @@ const {
 
 app.use(cookieParser());
 
-app.post('/signin', signinValidation, login);
+app.use(requestLogger);
 
+app.post('/signin', signinValidation, login);
 app.post('/signup', signupValidation, createUser);
 
 app.use(auth);
@@ -43,6 +45,9 @@ app.use(auth);
 app.use(UsersRouter);
 app.use(CardsRouter);
 app.use('*', (req, res, next) => next(new NotFoundError('Не найдено')));
+
+app.use(errorLogger);
+
 app.use(errors());
 app.use(errorHandler);
 
